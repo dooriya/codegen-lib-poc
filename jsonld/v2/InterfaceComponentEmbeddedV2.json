@@ -1,0 +1,72 @@
+{
+  "@context": "dtmi:dtdl:context;2",
+  "@id": "dtmi:test:parentInterface;1",
+  "@type": "Interface",
+  "contents": [
+    {
+      "@type": "Telemetry",
+      "name": "noComponentTelemetry",
+      "schema": "string"
+    },
+    {
+      "@type": "Component",
+      "name": "child",
+      "schema": {
+        "@id": "dtmi:test:anInterface;1",
+        "@type": "Interface",
+        "contents": [
+          {
+            "@id": "dtmi:test:aProperty;1",
+            "@type": "Property",
+            "name": "expectedDistance",
+            "schema": "double"
+          },
+          {
+            "@id": "dtmi:test:aTelemetry;1",
+            "@type": "Telemetry",
+            "name": "currentDistance",
+            "schema": "double"
+          },
+          {
+            "@id": "dtmi:test:aCommand;1",
+            "@type": "Command",
+            "name": "setDistance"
+          },
+          {
+            "@id": "dtmi:test:aRelationship;1",
+            "@type": "Relationship",
+            "name": "proximity"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "Component",
+      "name": "child2",
+      "schema": {
+        "@id": "dtmi:test:anInterface2;1",
+        "@type": "Interface",
+        "contents": [
+          {
+            "@type": "Property",
+            "name": "expectedDistance",
+            "schema": "double"
+          },
+          {
+            "@type": "Telemetry",
+            "name": "currentDistance",
+            "schema": "double"
+          },
+          {
+            "@type": "Command",
+            "name": "setDistance"
+          },
+          {
+            "@type": "Relationship",
+            "name": "proximity"
+          }
+        ]
+      }
+    }
+  ]
+}

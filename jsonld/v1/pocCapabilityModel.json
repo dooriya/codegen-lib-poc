@@ -1,0 +1,96 @@
+{
+    "@id": "urn:test:pocDevice:1",
+    "@type": "CapabilityModel",
+    "displayName": "PoC Device",
+    "implements": [
+      {
+        "name": "pocInterface",
+        "schema": {
+          "@id": "urn:test:pocInterface:1",
+          "@type": "Interface",
+          "contents": [
+            {
+              "@id": "urn:test:currentLocationTelemetry:1",
+              "@type": "Telemetry",
+              "name": "currentLocation",
+              "schema": {
+                "@type": "Object",
+                "fields": [
+                  {
+                    "name": "latitude",
+                    "schema": "double",
+                    "description": "distance from equator",
+                    "comment": "positive is north"
+                  },
+                  {
+                    "name": "longitude",
+                    "schema": "double",
+                    "description": "distance from meridian",
+                    "comment": "positive is east"
+                  }
+                ]
+              }
+            },
+            {
+              "@id": "urn:test:batteryRemainingProperty:1",
+              "@type": "Property",
+              "comment": "Remaining battery runtime in seconds. Ex. 383.",
+              "displayName": "Battery remaining",
+              "name": "batteryRemaining",
+              "schema": "double"
+            },
+            {
+              "@id": "urn:test:settings:1",
+              "@type": "Property",
+              "name": "settings",
+              "schema": {
+                "@type": "Object",
+                "fields": [
+                  {
+                    "name": "fanSpeed",
+                    "schema": "double"
+                  },
+                  {
+                    "name": "voltage",
+                    "schema": "double"
+                  }
+                ]
+              },
+              "writable": true,
+              "comment": "How does the device connect to the cloud? If there are multiple connectivity options on the device, report all of them as a comma separated list. Ex. LTE, Wifi"
+            },
+            {
+              "@id": "urn:test:updateFirmwareCommand:1",
+              "@type": "Command",
+              "name": "updateFirmware",
+              "request": {
+                "name": "updateFirmwareParams",
+                "schema": {
+                  "@type": "Object",
+                  "fields": [
+                    {
+                      "name": "firmwareUri",
+                      "schema": "string"
+                    },
+                    {
+                      "name": "firmwareVersion",
+                      "schema": "integer"
+                    }
+                  ]
+                }
+              },
+              "response": {
+                "name": "result",
+                "schema": "boolean"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "deviceInfo",
+        "schema": "urn:azureiot:DeviceManagement:DeviceInformation:1"
+      }
+    ],
+    "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+  }
