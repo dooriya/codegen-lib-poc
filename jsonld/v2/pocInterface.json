@@ -1,6 +1,6 @@
 {
   "@context": "dtmi:dtdl:context;2",
-  "@id": "dtmi:test:pocInterface;1",
+  "@id": "dtmi:test:pocsensor;1",
   "@type": "Interface",
   "contents": [
     {
@@ -41,7 +41,7 @@
         "@type": "Object",
         "fields": [
           {
-            "name": "fanSpeed",
+            "name": "fan_speed",
             "schema": "double",
             "description": "target fan speed to set"
           },
@@ -58,19 +58,19 @@
     {
       "@id": "dtmi:test:updateFirmwareCommand;1",
       "@type": "Command",
-      "name": "updateFirmware",
+      "name": "update_firmware",
       "request": {
         "name": "request",
         "schema": {
           "@type": "Object",
           "fields": [
             {
-              "name": "firmwareUri",
+              "name": "firmware_uri",
               "schema": "string",
               "description": "the download uri for the new firmware"
             },
             {
-              "name": "firmwareVersion",
+              "name": "firmware_version",
               "schema": "integer",
               "description": "the new firmware version"
             }

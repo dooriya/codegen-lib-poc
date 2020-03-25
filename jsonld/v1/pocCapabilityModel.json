@@ -4,9 +4,9 @@
     "displayName": "PoC Device",
     "implements": [
       {
-        "name": "pocInterface",
+        "name": "pocsensor",
         "schema": {
-          "@id": "urn:test:pocInterface:1",
+          "@id": "urn:test:pocSensor:1",
           "@type": "Interface",
           "contents": [
             {
@@ -47,34 +47,38 @@
                 "@type": "Object",
                 "fields": [
                   {
-                    "name": "fanSpeed",
-                    "schema": "double"
+                    "name": "fan_speed",
+                    "schema": "double",
+                    "description": "target fan speed to set"
                   },
                   {
                     "name": "voltage",
-                    "schema": "double"
+                    "schema": "double",
+                    "description": "target voltage to set"
                   }
                 ]
               },
               "writable": true,
-              "comment": "How does the device connect to the cloud? If there are multiple connectivity options on the device, report all of them as a comma separated list. Ex. LTE, Wifi"
+              "description": "basic settings for the device"
             },
             {
               "@id": "urn:test:updateFirmwareCommand:1",
               "@type": "Command",
-              "name": "updateFirmware",
+              "name": "update_firmware",
               "request": {
-                "name": "updateFirmwareParams",
+                "name": "request",
                 "schema": {
                   "@type": "Object",
                   "fields": [
                     {
-                      "name": "firmwareUri",
-                      "schema": "string"
+                      "name": "firmware_uri",
+                      "schema": "string",
+                      "description": "the download uri for the new firmware"
                     },
                     {
-                      "name": "firmwareVersion",
-                      "schema": "integer"
+                      "name": "firmware_version",
+                      "schema": "integer",
+                      "description": "the new firmware version"
                     }
                   ]
                 }
