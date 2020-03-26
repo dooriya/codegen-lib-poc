@@ -17,7 +17,7 @@ void pocsensor_get_location();
 void pocsensor_get_battery_remaining();
 
 // Update settings for the device
-bool pocsensor_update_settings(double fanSpeed, double voltage);
+void pocsensor_update_settings(double fanSpeed, double voltage);
 
 // Perform update firmware operation.
 bool pocsensor_update_firmware(char * firmware_uri, int firmware_version);

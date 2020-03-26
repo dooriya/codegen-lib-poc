@@ -16,11 +16,10 @@
 #include <string.h>
 #include "digitaltwin_serializer.h"
 #include "parson.h"
-#include "../pocDevice_impl.h"
 
 /* Serialize telemetry data */
 
-digitaltwin_serializer_result pocinterface_location_to_json(pocinterface_location * location, char * out_buffer, size_t max_size)
+digitaltwin_serializer_result pocsensor_location_to_json(pocsensor_location * location, char * out_buffer, size_t max_size)
 {
     if (location == NULL || out_buffer == NULL)
     {
@@ -61,7 +60,7 @@ digitaltwin_serializer_result pocinterface_location_to_json(pocinterface_locatio
 
 /* Serialize reported property value */
 
-digitaltwin_serializer_result pocinterface_battery_remaining_to_json(double * battery_remaining, char * out_buffer, size_t max_size)
+digitaltwin_serializer_result pocsensor_battery_remaining_to_json(double * battery_remaining, char * out_buffer, size_t max_size)
 {
     if (battery_remaining == NULL || out_buffer == NULL)
     {
@@ -86,7 +85,7 @@ digitaltwin_serializer_result pocinterface_battery_remaining_to_json(double * ba
 
 /* Serialize command response data */
 
-digitaltwin_serializer_result pocinterface_update_firmware_response_to_json(bool * response, char* out_buffer, size_t max_size)
+digitaltwin_serializer_result pocsensor_update_firmware_response_to_json(bool * response, char* out_buffer, size_t max_size)
 {
     if (out_buffer == NULL)
     {
@@ -112,7 +111,7 @@ digitaltwin_serializer_result pocinterface_update_firmware_response_to_json(bool
 
 /* Deserialize desired property value */
 
-digitaltwin_serializer_result pocinterface_settings_from_json(pocinterface_settings * desiredValue, const char * data_buffer, size_t size)
+digitaltwin_serializer_result pocsensor_settings_from_json(pocsensor_settings * desiredValue, const char * data_buffer, size_t size)
 {
     (void)size;
 
@@ -141,7 +140,7 @@ digitaltwin_serializer_result pocinterface_settings_from_json(pocinterface_setti
 
 /* Deserialize command request data */
 
-digitaltwin_serializer_result pocinterface_update_firmware_request_from_json(pocinterface_updatefirmware_request * requestData, const char * data_buffer, size_t size)
+digitaltwin_serializer_result pocsensor_update_firmware_request_from_json(pocsensor_update_firmware_request * requestData, const char * data_buffer, size_t size)
 {
     (void)size;
 
@@ -155,21 +154,21 @@ digitaltwin_serializer_result pocinterface_update_firmware_request_from_json(poc
 
     JSON_Object * jsonObject = json_value_get_object(jsonValue);
 
-    const char * firmwareUriStr = (const char*)json_object_get_string(jsonObject, "firmwareUri");
-    if (firmwareUriStr != NULL)
+    const char * firmware_uriStr = (const char*)json_object_get_string(jsonObject, "firmware_uri");
+    if (firmware_uriStr != NULL)
     {
-        size_t firmwareUriStrLen = strlen(firmwareUriStr);
+        size_t firmware_uriStrLen = strlen(firmware_uriStr);
 
-        if (requestData->firmwareUri != NULL)
+        if (requestData->firmware_uri != NULL)
         {
-            free(requestData->firmwareUri);
-            requestData->firmwareUri = NULL;
+            free(requestData->firmware_uri);
+            requestData->firmware_uri = NULL;
         }
 
-        requestData->firmwareUri = (char *)malloc(firmwareUriStrLen + 1);
-        if (requestData->firmwareUri != NULL)
+        requestData->firmware_uri = (char *)malloc(firmware_uriStrLen + 1);
+        if (requestData->firmware_uri != NULL)
         {
-            strncpy(requestData->firmwareUri, firmwareUriStr, firmwareUriStrLen);
+            strncpy(requestData->firmware_uri, firmware_uriStr, firmware_uriStrLen);
         }
         else
         {
@@ -177,7 +176,7 @@ digitaltwin_serializer_result pocinterface_update_firmware_request_from_json(poc
         }
     }
 
-    requestData->firmwareVersion = (int)json_object_get_number(jsonObject, "firmwareVersion");
+    requestData->firmware_version = (int)json_object_get_number(jsonObject, "firmware_version");
 
     if (jsonValue)
     {

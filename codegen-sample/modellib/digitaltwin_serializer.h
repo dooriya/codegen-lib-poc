@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "../pnp_schema_types.h"
+#include "pnp_schema_types.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -61,7 +61,7 @@ typedef enum digitaltwin_serializer_result_tag
  * @param max_size Allocated buffer size.
  * @return DIGITALTWIN_SERIALIZER_OK if the serialization is successful, other value indicates a failure.
  */
-digitaltwin_serializer_result pocinterface_location_to_json(pocinterface_location * location, char * out_buffer, size_t max_size);
+digitaltwin_serializer_result pocsensor_location_to_json(pocsensor_location * location, char * out_buffer, size_t max_size);
 
 /**
  * @brief Serialize the battery_remaining data to a JSON string stored in the user-specified data buffer.
@@ -71,7 +71,7 @@ digitaltwin_serializer_result pocinterface_location_to_json(pocinterface_locatio
  * @param max_size Allocated buffer size.
  * @return DIGITALTWIN_SERIALIZER_OK if the serialization is successful, other value indicates a failure.
  */
-digitaltwin_serializer_result pocinterface_battery_remaining_to_json(double * battery_remaining, char* out_buffer, size_t max_size);
+digitaltwin_serializer_result pocsensor_battery_remaining_to_json(double * battery_remaining, char* out_buffer, size_t max_size);
 
 /**
  * @brief Serialize the response data of update_firmware command to a JSON string stored in the user-specified data buffer.
@@ -81,7 +81,7 @@ digitaltwin_serializer_result pocinterface_battery_remaining_to_json(double * ba
  * @param max_size Allocated buffer size.
  * @return DIGITALTWIN_SERIALIZER_OK if the serialization is successful, other value indicates a failure.
  */
-digitaltwin_serializer_result pocinterface_update_firmware_response_to_json(bool * response, char* out_buffer, size_t max_size);
+digitaltwin_serializer_result pocsensor_update_firmware_response_to_json(bool * response, char* out_buffer, size_t max_size);
 
 /************************** Deserialization APIs ****************************/
 
@@ -93,7 +93,7 @@ digitaltwin_serializer_result pocinterface_update_firmware_response_to_json(bool
  * @param size Length of the buffer containing data to be deserialized.
  * @return DIGITALTWIN_SERIALIZER_OK if the deserialization is successful, other value indicates a failure.
  */
-digitaltwin_serializer_result pocinterface_settings_from_json(pocinterface_settings* settings, const char* data_buffer, size_t size);
+digitaltwin_serializer_result pocsensor_settings_from_json(pocsensor_settings* settings, const char* data_buffer, size_t size);
 
 /**
  * @brief Deserialize the request value for updateFirmware command from a specified data buffer.
@@ -103,7 +103,7 @@ digitaltwin_serializer_result pocinterface_settings_from_json(pocinterface_setti
  * @param size Length of the buffer containing data to be deserialized.
  * @return DIGITALTWIN_SERIALIZER_OK if the deserialization is successful, other value indicates a failure.
  */
-digitaltwin_serializer_result pocinterface_update_firmware_request_from_json(pocinterface_updatefirmware_request* request, const char* data_buffer, size_t size);
+digitaltwin_serializer_result pocsensor_update_firmware_request_from_json(pocsensor_update_firmware_request* request, const char* data_buffer, size_t size);
 
 #ifdef __cplusplus
 }

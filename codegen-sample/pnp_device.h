@@ -11,10 +11,11 @@
 #include "digitaltwin_interface_client.h"
 #include "azure_c_shared_utility/threadapi.h"
 #include "azure_c_shared_utility/tickcounter.h"
-#include "utilities/digitaltwin_client_helper.h"
+#include "azure_c_shared_utility/xlogging.h"
+#include "interface/digitaltwin_client_helper.h"
 
-#include "utilities/pocinterface_interface.h"
-#include "pocDevice_impl.h"
+#include "./interface/pocsensor_interface.h"
+#include "./port/pocDevice_impl.h"
 
 #ifdef __cplusplus
 extern "C"

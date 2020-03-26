@@ -22,32 +22,32 @@ extern "C"
 /**
  * @brief Data type definition of the location telemetry.
  */
-typedef struct pocinterface_location_tag
+typedef struct pocsensor_location_tag
 {
     double latitude;    /* distance from equator */
     double longitude;   /* istance from meridian */
-} pocinterface_location;
+} pocsensor_location;
 
 /*------------------------ Type Definition for Property Schema ----------------------------*/
 /**
  * @brief Data type definition of the settings property.
  */
-typedef struct pocinterface_settings_tag
+typedef struct pocsensor_settings_tag
 {
     double fanSpeed;    /* target fan speed to set */
     double voltage;     /* target voltage to set */
 
-} pocinterface_settings;
+} pocsensor_settings;
 
 /*---------------- Type Definition for Command Request and Response Schema -----------------*/
 /**
  * @brief Data type definition of the updateFirmware command request.
  */
-typedef struct pocinterface_updatefirmware_request_tag
+typedef struct pocsensor_update_firmware_request_tag
 {
-    char* firmwareUri;      /* the download uri for the new firmware */
-    int firmwareVersion;    /* the new firmware version */
-} pocinterface_updatefirmware_request;
+    char* firmware_uri;      /* the download uri for the new firmware */
+    int firmware_version;    /* the new firmware version */
+} pocsensor_update_firmware_request;
 
 #ifdef __cplusplus
 }

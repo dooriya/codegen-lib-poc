@@ -19,20 +19,22 @@ endif()
 cmake_minimum_required(VERSION 2.8)
 
 set(codegen-sample_h_files
-    ./utilities/pocinterface_interface.h
-    ./utilities/digitaltwin_client_helper.h
-    ./utilities/digitaltwin_serializer.h
-    ./pnp_schema_types.h
-    ./pocDevice_impl.h
+    ./interface/pocsensor_interface.h
+    ./interface/digitaltwin_client_helper.h
+    ./modellib/digitaltwin_serializer.h
+    ./modellib/pnp_schema_types.h
+    ./port/pocDevice_impl.h
     ./pnp_device.h
+    ./dps_prov.h
 )
 
 set(codegen-sample_c_files
-    ./utilities/pocinterface_interface.c
-    ./utilities/digitaltwin_client_helper.c
-    ./utilities/digitaltwin_serializer.c
-    ./pocDevice_impl.c
+    ./interface/pocsensor_interface.c
+    ./interface/digitaltwin_client_helper.c
+    ./modellib/digitaltwin_serializer.c
+    ./port/pocDevice_impl.c
     ./pnp_device.c
+    ./dps_prov.c
     ./main.c
 )
 

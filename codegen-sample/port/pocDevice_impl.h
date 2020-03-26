@@ -17,27 +17,17 @@ extern "C"
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "pnp_schema_types.h"
-
-/**
-* @brief Result of DigitalTwin command execution.
-*/
-typedef enum DIGITALTWIN_COMMAND_RESULT_TAG
-{
-    DIGITALTWIN_COMMAND_OK,
-    DIGITALTWIN_COMMAND_TIMEOUT,
-    DIGITALTWIN_COMMAND_ERROR
-} DIGITALTWIN_COMMAND_RESULT;
+#include "../modellib/pnp_schema_types.h"
 
 /*--------------- Telemetry Date Getter and Callback Function ------------------*/
-void pocsensor_get_location(pocinterface_location * location);
+void pocsensor_get_location(pocsensor_location * location);
 
 /*------------- Property Data Getter and Callback Functions -------------------*/
 double pocsensor_get_battery_remaining();
-bool pocsensor_get_settings(pocinterface_settings *settings);
+bool pocsensor_update_settings(pocsensor_settings *settings);
 
 /*------------------------- Command Execution Functions -----------------------*/
-DIGITALTWIN_COMMAND_RESULT pocsensor_Command_UpdateFirmware(pocinterface_updatefirmware_request *updateFirmwareParams, bool* response, unsigned int* statusCode);
+bool pocsensor_update_firmware(pocsensor_update_firmware_request *update_firmware_request);
 
 #ifdef __cplusplus
 }

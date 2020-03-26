@@ -83,11 +83,6 @@
       }
     },
     {
-      "@id": "dtmi:test:aRelationship;1",
-      "@type": "Relationship",
-      "name": "proximity"
-    },
-    {
       "@type": "Component",
       "name": "deviceInfo",
       "schema": "dtmi:azure:deviceManagement:DeviceInformation;1"

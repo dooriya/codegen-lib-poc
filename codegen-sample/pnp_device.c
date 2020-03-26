@@ -8,7 +8,7 @@
 
 // Number of Digital Twins interfaces that this device supports.
 #define DIGITALTWIN_INTERFACE_NUM 1
-#define POCINTERFACE_INDEX 0
+#define POCSENSOR_INDEX 0
 
 #define DEFAULT_SEND_TELEMETRY_INTERVAL_MS 10000
 
@@ -39,9 +39,9 @@ int pnp_device_initialize(const char* connectionString, const char* trustedCert)
     // Invoke to the ***Interface_Create - implemented in a separate library - to create DIGITALTWIN_INTERFACE_CLIENT_HANDLE.
     // NOTE: Other than creation and destruction, NO operations may occur on any DIGITALTWIN_INTERFACE_CLIENT_HANDLE
     // until after we've completed its registration (see DigitalTwinClientHelper_RegisterInterfacesAndWait).
-    if ((interfaceClientHandles[POCINTERFACE_INDEX] = PocInterfaceInterface_Create(digitalTwinDeviceClientHandle)) == NULL)
+    if ((interfaceClientHandles[POCSENSOR_INDEX] = PocSensorInterface_Create(digitalTwinDeviceClientHandle)) == NULL)
     {
-        LogError("PocInterfaceInterface_Create failed");
+        LogError("PocSensorInterface_Create failed");
         return -1;
     }
 
@@ -56,7 +56,7 @@ int pnp_device_initialize(const char* connectionString, const char* trustedCert)
     DigitalTwinClientHelper_Check();
 
     // report properties
-    PocInterfaceInterface_Property_ReportAll();
+    PocSensorInterface_Property_ReportAll();
 
     tickcounter_get_current_ms(tickcounter, &lastTickSend);
     return 0;
@@ -71,7 +71,7 @@ void pnp_device_run()
     {
         LogInfo("Send telemetry data to IoT Hub");
 
-        PocInterfaceInterface_Telemetry_SendAll();
+        PocSensorInterface_Telemetry_SendAll();
 
         tickcounter_get_current_ms(tickcounter, &lastTickSend);
     }
@@ -84,9 +84,9 @@ void pnp_device_run()
 
 void pnp_device_close()
 {
-    if (interfaceClientHandles[POCINTERFACE_INDEX] != NULL)
+    if (interfaceClientHandles[POCSENSOR_INDEX] != NULL)
     {
-        PocInterfaceInterface_Close(interfaceClientHandles[POCINTERFACE_INDEX]);
+        PocSensorInterface_Close(interfaceClientHandles[POCSENSOR_INDEX]);
     }
 
     DigitalTwinClientHelper_DeInitialize();
