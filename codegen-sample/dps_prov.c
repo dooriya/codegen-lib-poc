@@ -31,13 +31,13 @@ const IOTHUB_SECURITY_TYPE secureDeviceTypeForIotHub = IOTHUB_SECURITY_TYPE_SYMM
 static const char *globalDpsEndpoint = "global.azure-devices-provisioning.net";
 
 // DPS ID scope
-static char* dpsIdScope = "0ne0006F1C1"; //"[DPS ID Scope]";
+static char* dpsIdScope = "[DPS ID Scope]";
 
 // DPS symmetric keys for authentication
-static char* sasKey = "AkVYg/jX/23wPqaFmZp+X74o6bVFiEpCuUg4Tr4g4cWCoeRGswnZ70F+xgYSt0fKW5On0Uaozibk54eyoO7ULg==";//"[DPS Symmetric Key]";
+static char* sasKey = "[DPS Symmetric Key]";
 
 // Device Id
-static char* deviceId = "dps-device-1"; //"[Device Id]";
+static char* deviceId = "[Device Id]";
 
 static const char *digitalTwinSample_CustomProvisioningData = "{"
                                                               "\"__iot:interfaces\":"
