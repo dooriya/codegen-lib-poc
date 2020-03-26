@@ -28,11 +28,13 @@ digitaltwin_serializer_result pocsensor_location_to_json(pocsensor_location * lo
 
     memset(out_buffer, 0, max_size);
 
-    JSON_Value * root_value = json_value_init_object();
-    JSON_Object * root_object = json_value_get_object(root_value);
+    JSON_Value* root_value = json_value_init_object();
+    JSON_Object* root_object = json_value_get_object(root_value);
+    json_object_set_value(root_object, "location", json_value_init_object());
 
-    json_object_set_number(root_object, "latitude", location->latitude);
-    json_object_set_number(root_object, "longitude", location->longitude);
+    JSON_Object* location_object = json_object_get_object(root_object, "location");
+    json_object_set_number(location_object, "latitude", location->latitude);
+    json_object_set_number(location_object, "longitude", location->longitude);
 
     char * json_string = json_serialize_to_string(root_value);
     if (json_string == NULL)

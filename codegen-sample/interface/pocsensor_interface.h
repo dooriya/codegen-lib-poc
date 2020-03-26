@@ -40,13 +40,10 @@ static const char PocSensorInterfaceInstanceName[] = "pocsensor";
 static const char PocSensorInterface_LocationTelemetry[] = "location";
 
 // Property names for this interface.
-
 #define PocSensorInterface_BatteryRemainingProperty "battery_remaining"
-
 #define PocSensorInterface_SettingsProperty "settings"
 
 // Command names for this interface
-
 #define PocSensorInterface_UpdateFirmwareCommand "updateFirmware"
 
 // Methods
@@ -54,7 +51,7 @@ DIGITALTWIN_INTERFACE_CLIENT_HANDLE PocSensorInterface_Create();
 
 void PocSensorInterface_Close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendAll();
+DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendLocation();
 
 DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportAll();
 

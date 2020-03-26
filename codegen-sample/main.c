@@ -31,7 +31,6 @@ static void setup()
     {
         LogError("DPS provisioning failed.");
     }
-    
 }
 
 // main entry point.

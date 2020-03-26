@@ -284,7 +284,7 @@ static void PocSensorInterface_TelemetryCallback(DIGITALTWIN_CLIENT_RESULT digit
     }
 }
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendAll()
+DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendLocation()
 {
     if (appState.interfaceClientHandle == NULL)
     {
@@ -293,23 +293,24 @@ DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendAll()
 
     DIGITALTWIN_CLIENT_RESULT result;
 
-    char message_buffer[MAX_MESSAGE_SIZE];
+    /*------------------------- FIX ME  -------------------------*/
     char location_data[MAX_MESSAGE_SIZE];
 
-    // Send multiple telemetries in a single message
-    sprintf_s(message_buffer, MAX_MESSAGE_SIZE, "{");
-
+    // Define a location data.
     pocsensor_location location;
+
+    // Retrieve location data from sensor.
     pocsensor_get_location(&location);
+
+    // Serialize location data to JSON.
     pocsensor_location_to_json(&location, location_data, MAX_MESSAGE_SIZE);
 
-    sprintf_s(message_buffer, MAX_MESSAGE_SIZE, "{\"%s\": %s}", PocSensorInterface_LocationTelemetry, location_data);
-
-    if ((result = DigitalTwin_InterfaceClient_SendTelemetryAsync(appState.interfaceClientHandle, (unsigned char*)message_buffer, strlen(message_buffer),
-        PocSensorInterface_TelemetryCallback, NULL)) != DIGITALTWIN_CLIENT_OK)
+    // Send location telemetry to Azure IoT.
+    if ((result = DigitalTwin_InterfaceClient_SendTelemetryAsync(appState.interfaceClientHandle, (unsigned char*)location_data, strlen(location_data), PocSensorInterface_TelemetryCallback, NULL)) != DIGITALTWIN_CLIENT_OK)
     {
         LogError("POCSENSOR_INTERFACE: DigitalTwin_InterfaceClient_SendTelemetryAsync failed for sending telemetry.");
     }
+    /*------------------------- ------- -------------------------*/
 
     return result;
 }
@@ -347,33 +348,37 @@ DIGITALTWIN_INTERFACE_CLIENT_HANDLE PocSensorInterface_Create()
 
     memset(&appState, 0, sizeof(POCSENSOR_INTERFACE_STATE));
 
-    if ((result = DigitalTwin_InterfaceClient_Create(PocSensorInterfaceId,  PocSensorInterfaceInstanceName, PocSensorInterface_InterfaceRegisteredCallback, (void*)&appState, &interfaceHandle)) != DIGITALTWIN_CLIENT_OK)
+    result = DigitalTwin_InterfaceClient_Create(PocSensorInterfaceId, PocSensorInterfaceInstanceName, PocSensorInterface_InterfaceRegisteredCallback, (void*)&appState, &interfaceHandle);
+    if (result != DIGITALTWIN_CLIENT_OK)
     {
         LogError("POCSENSOR_INTERFACE: Unable to allocate interface client handle for interfaceId=<%s>, interfaceInstanceName=<%s>, error=<%s>", PocSensorInterfaceId, PocSensorInterfaceInstanceName, MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
         interfaceHandle = NULL;
+        return NULL;
     }
 
-    else if ((result = DigitalTwin_InterfaceClient_SetPropertiesUpdatedCallback(interfaceHandle, PocSensorInterface_ProcessPropertyUpdate, (void*)&appState)) != DIGITALTWIN_CLIENT_OK)
+    result = DigitalTwin_InterfaceClient_SetPropertiesUpdatedCallback(interfaceHandle, PocSensorInterface_ProcessPropertyUpdate, (void*)&appState);
+    if (result != DIGITALTWIN_CLIENT_OK)
     {
         LogError("POCSENSOR_INTERFACE: DigitalTwin_InterfaceClient_SetPropertiesUpdatedCallback failed. error=<%s>", MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
         PocSensorInterface_Close(interfaceHandle);
         interfaceHandle = NULL;
+        return NULL;
     }
 
-    else if ((result = DigitalTwin_InterfaceClient_SetCommandsCallback(interfaceHandle, PocSensorInterface_ProcessCommandUpdate, (void*)&appState)) != DIGITALTWIN_CLIENT_OK)
+    result = DigitalTwin_InterfaceClient_SetCommandsCallback(interfaceHandle, PocSensorInterface_ProcessCommandUpdate, (void*)&appState);
+    if (result != DIGITALTWIN_CLIENT_OK)
     {
         LogError("POCSENSOR_INTERFACE: DigitalTwin_InterfaceClient_SetCommandsCallbacks failed. error=<%s>", MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
         PocSensorInterface_Close(interfaceHandle);
         interfaceHandle = NULL;
+        return NULL;
     }
-
     else
     {
         LogInfo("POCSENSOR_INTERFACE: Created DIGITALTWIN_INTERFACE_CLIENT_HANDLE successfully for interfaceId=<%s>, interfaceInstanceName=<%s>, handle=<%p>", PocSensorInterfaceId, PocSensorInterfaceInstanceName, interfaceHandle);
         appState.interfaceClientHandle = interfaceHandle;
+        return interfaceHandle;
     }
-
-    return interfaceHandle;
 }
 
 void PocSensorInterface_Close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle)
