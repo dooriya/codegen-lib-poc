@@ -15,7 +15,7 @@
 #include "interface/digitaltwin_client_helper.h"
 
 #include "./interface/pocsensor_interface.h"
-#include "./port/pocDevice_impl.h"
+#include "./capabilities/device_capabilities.h"
 
 #ifdef __cplusplus
 extern "C"

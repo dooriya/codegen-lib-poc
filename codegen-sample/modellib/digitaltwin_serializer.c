@@ -156,10 +156,10 @@ digitaltwin_serializer_result pocsensor_update_firmware_request_from_json(pocsen
 
     JSON_Object * jsonObject = json_value_get_object(jsonValue);
 
-    const char * firmware_uriStr = (const char*)json_object_get_string(jsonObject, "firmware_uri");
-    if (firmware_uriStr != NULL)
+    const char * firmware_uri_str = (const char*)json_object_get_string(jsonObject, "firmware_uri");
+    if (firmware_uri_str != NULL)
     {
-        size_t firmware_uriStrLen = strlen(firmware_uriStr);
+        size_t firmware_uri_len = strlen(firmware_uri_str);
 
         if (requestData->firmware_uri != NULL)
         {
@@ -167,10 +167,10 @@ digitaltwin_serializer_result pocsensor_update_firmware_request_from_json(pocsen
             requestData->firmware_uri = NULL;
         }
 
-        requestData->firmware_uri = (char *)malloc(firmware_uriStrLen + 1);
+        requestData->firmware_uri = (char *)calloc(firmware_uri_len + 1, sizeof(char));
         if (requestData->firmware_uri != NULL)
         {
-            strncpy(requestData->firmware_uri, firmware_uriStr, firmware_uriStrLen);
+            strncpy(requestData->firmware_uri, firmware_uri_str, firmware_uri_len);
         }
         else
         {
