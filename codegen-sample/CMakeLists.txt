@@ -23,8 +23,6 @@ set(codegen-sample_h_files
     ./interface/digitaltwin_client_helper.h
     ./modellib/digitaltwin_serializer.h
     ./modellib/pnp_schema_types.h
-    ./capabilities/device_capabilities.h
-    ./pnp_device.h
     ./dps_prov.h
 )
 
@@ -33,7 +31,6 @@ set(codegen-sample_c_files
     ./interface/digitaltwin_client_helper.c
     ./modellib/digitaltwin_serializer.c
     ./capabilities/device_capabilities.c
-    ./pnp_device.c
     ./dps_prov.c
     ./main.c
 )

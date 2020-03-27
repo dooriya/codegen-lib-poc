@@ -1,12 +1,16 @@
+#include <stdio.h>
 #include "dps_prov.h"
 
 //
 // Core header files for C and IoTHub layer
 //
-#include <stdio.h>
+
+#include "iothub.h"
+#include "iothub_device_client_ll.h"
+#include "iothub_client_options.h"
+#include "iothubtransportmqtt.h"
 #include "azure_c_shared_utility/threadapi.h"
 #include "azure_c_shared_utility/xlogging.h"
-#include "pnp_device.h"
 
 // IoT Central requires DPS.  Include required header and constants
 #include "azure_prov_client/iothub_security_factory.h"

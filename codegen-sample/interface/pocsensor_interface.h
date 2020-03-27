@@ -44,18 +44,16 @@ static const char PocSensorInterface_LocationTelemetry[] = "location";
 #define PocSensorInterface_SettingsProperty "settings"
 
 // Command names for this interface
-#define PocSensorInterface_UpdateFirmwareCommand "updateFirmware"
+#define PocSensorInterface_UpdateFirmwareCommand "update_firmware"
 
 // Methods
 DIGITALTWIN_INTERFACE_CLIENT_HANDLE PocSensorInterface_Create();
 
-void PocSensorInterface_Close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
-
 DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendLocation();
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportAll();
-
 DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportBatteryRemaining();
+
+void PocSensorInterface_Close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
 
 #ifdef __cplusplus
 }
