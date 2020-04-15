@@ -13,47 +13,21 @@
 #include <stdbool.h>
 #include <string.h>
 #include "digitaltwin_interface_client.h"
-#include "../modellib/digitaltwin_serializer.h"
+#include "../serializer/pocsensor_serializer.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-typedef enum POCSENSOR_TELEMETRY_TAG
-{
-    pocsensor_location_TELEMETRY
-} POCSENSOR_TELEMETRY;
-
-typedef enum POCSENSOR_READONLY_PROPERTY_TAG
-{
-    pocsensor_BATTERYREMAINING_PROPERTY,
-    pocsensor_settings_PROPERTY
-} POCSENSOR_PROPERTY;
-
-// DigitalTwin interface name from service perspective.
-static const char PocSensorInterfaceId[] = "urn:test:pocSensor:1";
-static const char PocSensorInterfaceInstanceName[] = "pocsensor";
-
-// Telemetry names for this interface.
-
-static const char PocSensorInterface_LocationTelemetry[] = "location";
-
-// Property names for this interface.
-#define PocSensorInterface_BatteryRemainingProperty "battery_remaining"
-#define PocSensorInterface_SettingsProperty "settings"
-
-// Command names for this interface
-#define PocSensorInterface_UpdateFirmwareCommand "update_firmware"
-
 // Methods
-DIGITALTWIN_INTERFACE_CLIENT_HANDLE PocSensorInterface_Create();
+DIGITALTWIN_INTERFACE_CLIENT_HANDLE pocsensor_create();
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Telemetry_SendLocation();
+DIGITALTWIN_CLIENT_RESULT pocsensor_send_location_telemetry();
 
 DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportBatteryRemaining();
 
-void PocSensorInterface_Close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
+void pocsensor_close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
 
 #ifdef __cplusplus
 }

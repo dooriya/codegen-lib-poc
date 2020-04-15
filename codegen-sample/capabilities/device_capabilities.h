@@ -17,7 +17,7 @@ extern "C"
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "../modellib/pnp_schema_types.h"
+#include "../serializer/pocsensor_serializer.h"
 
 /*--------------- Telemetry Date Getter and Callback Function ------------------*/
 void pocsensor_get_location(pocsensor_location * location);

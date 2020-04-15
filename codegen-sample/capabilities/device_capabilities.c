@@ -31,7 +31,7 @@ double pocsensor_get_battery_remaining()
 
 bool pocsensor_update_settings(pocsensor_settings *settings)
 {
-    printf("Set current fanspeed to: %f\r\n", settings->fanSpeed);
+    printf("Set current fanspeed to: %f\r\n", settings->fan_speed);
     printf("Set current voltage to: %f\r\n", settings->voltage);
 
     // do somthing with the new settings ...
@@ -42,7 +42,7 @@ bool pocsensor_update_settings(pocsensor_settings *settings)
 
 bool pocsensor_update_firmware(pocsensor_update_firmware_request *update_firmware_request)
 {
-    printf("Parameter: firmware_uri = %s\r\n", update_firmware_request->firmware_uri);
+    printf("Parameter: firmware_uri = %s\r\n", az_span_ptr(update_firmware_request->firmware_uri));
     printf("Parameter: firmware_version = %d\r\n", update_firmware_request->firmware_version);
 
     // do somthing to process the updateFirmware command ...

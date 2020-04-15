@@ -3,7 +3,7 @@
 #include "azure_c_shared_utility/xlogging.h"
 #include "azure_c_shared_utility/tickcounter.h"
 #include "digitaltwin_device_client_ll.h"
-#include "interface//digitaltwin_client_helper.h"
+#include "interface/digitaltwin_client_helper.h"
 #include "interface/pocsensor_interface.h"
 
 #include "dps_prov.h"
@@ -17,19 +17,15 @@ static const char *certificates = NULL;
 
 static bool iotHubConnected = false;
 
-/*------------------------ FIX ME ---------------------------*/
 // Number of Digital Twins interfaces that this device supports.
 #define DIGITALTWIN_INTERFACE_NUM 1
 #define POCSENSOR_INDEX 0
-/*-----------------------------------------------------------*/
 
-#define DEFAULT_SEND_TELEMETRY_INTERVAL_MS 10000
-
-/*------------------------- FIX ME  -------------------------*/
+#define DEFAULT_SEND_TELEMETRY_INTERVAL_MS 3000
 #define DEVICE_CAPABILITY_MODEL_URI "urn:test:pocDevice:1"
-/*-----------------------------------------------------------*/
 
-static DIGITALTWIN_INTERFACE_CLIENT_HANDLE interfaceClientHandles[DIGITALTWIN_INTERFACE_NUM];
+static DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE dt_device_client_handle = NULL;
+static DIGITALTWIN_INTERFACE_CLIENT_HANDLE interface_client_handles[DIGITALTWIN_INTERFACE_NUM];
 static TICK_COUNTER_HANDLE tickcounter = NULL;
 static tickcounter_ms_t lastTickSend;
 
@@ -37,40 +33,37 @@ int pnp_device_initialize(const char* deviceConnectionString, const char* truste
 {
     if ((tickcounter = tickcounter_create()) == NULL)
     {
-        LogError("tickcounter_create failed");
         return -1;
     }
 
-    DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE digitalTwinDeviceClientHandle = NULL;
-    memset(&interfaceClientHandles, 0, sizeof(interfaceClientHandles));
+    memset(&interface_client_handles, 0, sizeof(interface_client_handles));
 
     // Initialize DigitalTwin device handle
-    if ((digitalTwinDeviceClientHandle = DigitalTwinClientHelper_InitializeDeviceHandle(deviceConnectionString, false, trustedCert)) == NULL)
+    if ((dt_device_client_handle = az_dt_client_init_device_handle(deviceConnectionString, false, trustedCert)) == NULL)
     {
-        LogError("DigitalTwinClientHelper_InitializeDeviceHandle failed");
+        LogError("az_dt_client_init_device_handle failed");
         return -1;
     }
 
-    /*------------------------- FIX ME  -------------------------*/
     // Invoke to the ***Interface_Create - implemented in a separate library - to create DIGITALTWIN_INTERFACE_CLIENT_HANDLE.
     // NOTE: Other than creation and destruction, NO operations may occur on any DIGITALTWIN_INTERFACE_CLIENT_HANDLE
-    // until after we've completed its registration (see DigitalTwinClientHelper_RegisterInterfacesAndWait).
-    if ((interfaceClientHandles[POCSENSOR_INDEX] = PocSensorInterface_Create(digitalTwinDeviceClientHandle)) == NULL)
+    // until after we've completed its registration (see az_dt_client_register_interface).
+    if ((interface_client_handles[POCSENSOR_INDEX] = pocsensor_create(dt_device_client_handle)) == NULL)
     {
-        LogError("PocSensorInterface_Create failed");
+        LogError("pocsensor_create failed");
         return -1;
     }
-    /*-----------------------------------------------------------*/
 
     // Register the interface(s) we've created with Azure IoT.  This call will block until interfaces
     // are successfully registered, we get a failure from server, or we timeout.
-    if (DigitalTwinClientHelper_RegisterInterfacesAndWait(digitalTwinDeviceClientHandle, DEVICE_CAPABILITY_MODEL_URI, interfaceClientHandles, DIGITALTWIN_INTERFACE_NUM) != DIGITALTWIN_CLIENT_OK)
+    if (az_dt_client_register_interface(dt_device_client_handle, DEVICE_CAPABILITY_MODEL_URI, interface_client_handles, DIGITALTWIN_INTERFACE_NUM) != DIGITALTWIN_CLIENT_OK)
     {
-        LogError("DigitalTwinClientHelper_RegisterInterfacesAndWait failed");
+        LogError("az_dt_client_register_interface failed");
         return -1;
     }
 
-    DigitalTwinClientHelper_Check();
+    DigitalTwin_DeviceClient_LL_DoWork(dt_device_client_handle);
+    ThreadAPI_Sleep(100);
     return 0;
 }
 
@@ -85,25 +78,26 @@ void pnp_device_run()
         PocSensorInterface_Property_ReportBatteryRemaining();
 
         // Send telemetry
-        PocSensorInterface_Telemetry_SendLocation();
+        pocsensor_send_location_telemetry();
 
         tickcounter_get_current_ms(tickcounter, &lastTickSend);
     }
     else
     {
         // Just check data from IoT Hub
-        DigitalTwinClientHelper_Check();
+        DigitalTwin_DeviceClient_LL_DoWork(dt_device_client_handle);
+        ThreadAPI_Sleep(100);
     }
 }
 
 void pnp_device_close()
 {
-    if (interfaceClientHandles[POCSENSOR_INDEX] != NULL)
+    if (interface_client_handles[POCSENSOR_INDEX] != NULL)
     {
-        PocSensorInterface_Close(interfaceClientHandles[POCSENSOR_INDEX]);
+        pocsensor_close(interface_client_handles[POCSENSOR_INDEX]);
     }
 
-    DigitalTwinClientHelper_DeInitialize();
+    az_dt_client_deinit();
 }
 
 static void setup()
@@ -111,10 +105,10 @@ static void setup()
     iotHubConnected = false;
 
     // Initialize device model application
-    bool provResult = registerDevice(false, certificates);
+    bool provResult = register_device(false, certificates);
     if (provResult)
     {      
-        if (pnp_device_initialize(connectionString, certificates) == 0)
+        if (pnp_device_initialize(device_connection_string, certificates) == 0)
         {
             iotHubConnected = true;
             LogInfo("PnP enabled, running...");

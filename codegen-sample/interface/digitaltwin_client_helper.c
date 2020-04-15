@@ -18,9 +18,9 @@ static const int RegisterInterfacePollSleep = 100;
 static const int RegisterInterfaceMaxPolls = 600;
 
 static IOTHUB_DEVICE_CLIENT_LL_HANDLE deviceHandle = NULL;
-static DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE digitalTwinDeviceClientHandle = NULL;
+static DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE dt_device_client_handle = NULL;
 
-bool DigitalTwinClientHelper_SetOption(const char* optionName, const void* value)
+static bool az_dt_client_set_option(const char* optionName, const void* value)
 {
     if (deviceHandle == NULL || optionName == NULL || value == NULL)
     {
@@ -44,7 +44,7 @@ bool DigitalTwinClientHelper_SetOption(const char* optionName, const void* value
     }
 }
 
-DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE DigitalTwinClientHelper_InitializeDeviceHandle(const char* connectionString, bool traceOn, const char * trustedCert)
+DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE az_dt_client_init_device_handle(const char* device_connection_string, bool trace_on, const char * trustedCert)
 {
     DIGITALTWIN_CLIENT_RESULT result;
     bool urlEncodeOn = true;
@@ -57,26 +57,26 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE DigitalTwinClientHelper_InitializeDeviceHand
     else
     {
         // First, we create a standard IOTHUB_DEVICE_HANDLE handle for DigitalTwin to consume.
-        if ((deviceHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol)) == NULL)
+        if ((deviceHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(device_connection_string, MQTT_Protocol)) == NULL)
         {
             LogError("Failed to create device handle");
             IoTHub_Deinit();
             return NULL;
         }
 
-        DigitalTwinClientHelper_SetOption(OPTION_LOG_TRACE, &traceOn);
-        DigitalTwinClientHelper_SetOption("product_info", "pnp_codegen_v0.6.8");
+        az_dt_client_set_option(OPTION_LOG_TRACE, &trace_on);
+        az_dt_client_set_option("product_info", "pnp_codegen_v0.6.8");
 
         // Setting OPTION_AUTO_URL_ENCODE_DECODE is required by callers only for private-preview.  
         // https://github.com/Azure/azure-iot-sdk-c-pnp/issues/2 tracks making underlying DigitalTwin set this automatically.
-        DigitalTwinClientHelper_SetOption(OPTION_AUTO_URL_ENCODE_DECODE, &urlEncodeOn);
+        az_dt_client_set_option(OPTION_AUTO_URL_ENCODE_DECODE, &urlEncodeOn);
 
         if (trustedCert != NULL)
         {
-            DigitalTwinClientHelper_SetOption("TrustedCerts", trustedCert);
+            az_dt_client_set_option("TrustedCerts", trustedCert);
         }
 
-        if ((result = DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle(deviceHandle, &digitalTwinDeviceClientHandle)) != DIGITALTWIN_CLIENT_OK)
+        if ((result = DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle(deviceHandle, &dt_device_client_handle)) != DIGITALTWIN_CLIENT_OK)
         {
             LogError("DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle failed, error=<%s>", MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
         }
@@ -84,19 +84,19 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE DigitalTwinClientHelper_InitializeDeviceHand
         {
             // Never log the complete connection string , as this contains information
             // that could compromise security of the device.
-            LogInfo("Successfully created DigitalTwin device with connectionString=<****>, deviceHandle=<%p>", deviceHandle);
+            LogInfo("Successfully created DigitalTwin device with device_connection_string=<****>, deviceHandle=<%p>", deviceHandle);
         }
     }
 
-    return digitalTwinDeviceClientHandle;
+    return dt_device_client_handle;
 }
 
-// DigitalTwinClientHelper_InterfacesRegisteredCallback is invoked when the interfaces have been registered or failed.
+// az_dt_client_interface_registered_callback is invoked when the interfaces have been registered or failed.
 // The userContextCallback pointer is set to whether we succeeded or failed and checked by thread blocking
 // for registration to complete.
-void DigitalTwinClientHelper_InterfacesRegisteredCallback(DIGITALTWIN_CLIENT_RESULT digitalTwinInterfaceStatus, void *userContextCallback)
+static void az_dt_client_interface_registered_callback(DIGITALTWIN_CLIENT_RESULT digitalTwinInterfaceStatus, void *userContextCallback)
 {
-    DIGITALTWIN_REGISTRATION_STATUS* digitalTwinRegistrationStatus = (DIGITALTWIN_REGISTRATION_STATUS*)userContextCallback;
+    digitaltwin_registration_status* digitalTwinRegistrationStatus = (digitaltwin_registration_status*)userContextCallback;
 
     if (digitalTwinInterfaceStatus == DIGITALTWIN_CLIENT_OK)
     {
@@ -110,20 +110,20 @@ void DigitalTwinClientHelper_InterfacesRegisteredCallback(DIGITALTWIN_CLIENT_RES
     }
 }
 
-DIGITALTWIN_CLIENT_RESULT DigitalTwinClientHelper_RegisterInterfacesAndWait(DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE digitalTwinDeviceHandle, const char* deviceCapabilityModelUri, DIGITALTWIN_INTERFACE_CLIENT_HANDLE* interfaceClientHandles, int numInterfaceClientHandles)
+DIGITALTWIN_CLIENT_RESULT az_dt_client_register_interface(DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE digitalTwinDeviceHandle, const char* deviceCapabilityModelUri, DIGITALTWIN_INTERFACE_CLIENT_HANDLE* interface_client_handles, int numInterfaceClientHandles)
 {
     DIGITALTWIN_CLIENT_RESULT result;
-    DIGITALTWIN_REGISTRATION_STATUS digitalTwinRegistrationStatus = DIGITALTWIN_REGISTRATION_PENDING;
+    digitaltwin_registration_status digitalTwinRegistrationStatus = DIGITALTWIN_REGISTRATION_PENDING;
 
     // Give DigitalTwin interfaces to register. DigitalTwin_DeviceClient_LL_RegisterInterfacesAsync returns immediately
-    if ((result = DigitalTwin_DeviceClient_LL_RegisterInterfacesAsync(digitalTwinDeviceHandle, deviceCapabilityModelUri, interfaceClientHandles, numInterfaceClientHandles, DigitalTwinClientHelper_InterfacesRegisteredCallback, &digitalTwinRegistrationStatus)) != DIGITALTWIN_CLIENT_OK)
+    if ((result = DigitalTwin_DeviceClient_LL_RegisterInterfacesAsync(digitalTwinDeviceHandle, deviceCapabilityModelUri, interface_client_handles, numInterfaceClientHandles, az_dt_client_interface_registered_callback, &digitalTwinRegistrationStatus)) != DIGITALTWIN_CLIENT_OK)
     {
         LogError("DigitalTwin_DeviceClient_LL_RegisterInterfacesAsync failed, error=<%s>", MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
     }
     else
     {
         // After registration, we do a simple polling algorithm to check for whether the callback
-        // DigitalTwinClientHelper_InterfacesRegisteredCallback has changed digitalTwinRegistrationStatus. 
+        // az_dt_client_interface_registered_callback has changed digitalTwinRegistrationStatus. 
         // Since we can't do any other DigitalTwin operations at this point, we have to block here.
         for (int i = 0; (i < RegisterInterfaceMaxPolls) && (digitalTwinRegistrationStatus == DIGITALTWIN_REGISTRATION_PENDING); i++)
         {
@@ -151,56 +151,17 @@ DIGITALTWIN_CLIENT_RESULT DigitalTwinClientHelper_RegisterInterfacesAndWait(DIGI
     return result;
 }
 
-int DigitalTwinClientHelper_SetCommandResponse(DIGITALTWIN_CLIENT_COMMAND_RESPONSE* commandResponse, const unsigned char* responseData, int status)
+void az_dt_client_deinit()
 {
-    memset(commandResponse, 0, sizeof(*commandResponse));
-    commandResponse->version = DIGITALTWIN_CLIENT_COMMAND_RESPONSE_VERSION_1;
-    commandResponse->status = status;
-    int result = 0;
-
-    if (responseData != NULL)
+    if (dt_device_client_handle != NULL)
     {
-        size_t responseLen = strlen((const char *)responseData);
-
-        // Allocate a copy of the response data to return to the invoker.
-        // takes responsibility for freeing this data.
-        if (mallocAndStrcpy_s((char**)&commandResponse->responseData, (const char *)responseData) != 0)
-        {
-            LogError("ENVIRONMENTAL_SENSOR_INTERFACE: Unable to allocate response data");
-            commandResponse->status = 500;
-            result = MU_FAILURE;
-        }
-        else
-        {
-            commandResponse->responseDataLen = responseLen;
-            result = 0;
-        }
+        DigitalTwin_DeviceClient_LL_Destroy(dt_device_client_handle);
     }
 
-    return result;
-}
-
-void DigitalTwinClientHelper_SetUpdateAsyncStatus(DIGITALTWIN_CLIENT_ASYNC_COMMAND_UPDATE *asyncCommandUpdate, const char* commandName, const char* requestId, const unsigned char* propertyData, int status)
-{
-    memset(asyncCommandUpdate, 0, sizeof(DIGITALTWIN_CLIENT_ASYNC_COMMAND_UPDATE));
-    asyncCommandUpdate->version = DIGITALTWIN_CLIENT_ASYNC_COMMAND_UPDATE_VERSION_1;
-    asyncCommandUpdate->commandName = commandName;
-    asyncCommandUpdate->requestId = requestId;
-    asyncCommandUpdate->propertyData = propertyData;
-    asyncCommandUpdate->statusCode = status;
-}
-
-void DigitalTwinClientHelper_DeInitialize()
-{
-    if (digitalTwinDeviceClientHandle != NULL)
+    if ((dt_device_client_handle == NULL) && (deviceHandle != NULL))
     {
-        DigitalTwin_DeviceClient_LL_Destroy(digitalTwinDeviceClientHandle);
-    }
-
-    if ((digitalTwinDeviceClientHandle == NULL) && (deviceHandle != NULL))
-    {
-        // Only destroy the deviceHandle directly if we've never created a digitalTwinDeviceClientHandle
-        // (digitalTwinDeviceClientHandle de facto takes ownership of deviceHandle once its created).
+        // Only destroy the deviceHandle directly if we've never created a dt_device_client_handle
+        // (dt_device_client_handle de facto takes ownership of deviceHandle once its created).
         IoTHubDeviceClient_LL_Destroy(deviceHandle);
     }
 
@@ -208,10 +169,4 @@ void DigitalTwinClientHelper_DeInitialize()
     {
         IoTHub_Deinit();
     }
-}
-
-void DigitalTwinClientHelper_Check()
-{
-    DigitalTwin_DeviceClient_LL_DoWork(digitalTwinDeviceClientHandle);
-    ThreadAPI_Sleep(100);
 }

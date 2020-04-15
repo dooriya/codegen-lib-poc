@@ -17,6 +17,7 @@
 **/out/**
 **/build/**
 **/.vs/**
+**/.vscode/**
 
 [Dd]ebug/
 [Rr]elease/
