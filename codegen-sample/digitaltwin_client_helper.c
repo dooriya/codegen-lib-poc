@@ -17,23 +17,23 @@ static const int RegisterInterfacePollSleep = 100;
 // 'RegisterInterfacePollSleep' means we'll wait up to a minute for interface registration.
 static const int RegisterInterfaceMaxPolls = 600;
 
-static IOTHUB_DEVICE_CLIENT_LL_HANDLE deviceHandle = NULL;
+static IOTHUB_DEVICE_CLIENT_LL_HANDLE iothub_device_client_handle = NULL;
 static DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE dt_device_client_handle = NULL;
 
 static bool az_dt_client_set_option(const char* optionName, const void* value)
 {
-    if (deviceHandle == NULL || optionName == NULL || value == NULL)
+    if (iothub_device_client_handle == NULL || optionName == NULL || value == NULL)
     {
         return false;
     }
 
     IOTHUB_CLIENT_RESULT iothubClientResult;
 
-    if ((iothubClientResult = IoTHubDeviceClient_LL_SetOption(deviceHandle, optionName, value)) != IOTHUB_CLIENT_OK)
+    if ((iothubClientResult = IoTHubDeviceClient_LL_SetOption(iothub_device_client_handle, optionName, value)) != IOTHUB_CLIENT_OK)
     {
         LogError("Failed to set option %s, error=%d", optionName, iothubClientResult);
-        IoTHubDeviceClient_LL_Destroy(deviceHandle);
-        deviceHandle = NULL;
+        IoTHubDeviceClient_LL_Destroy(iothub_device_client_handle);
+        iothub_device_client_handle = NULL;
 
         IoTHub_Deinit();
         return false;
@@ -48,7 +48,7 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE az_dt_client_init_device_handle(const char* 
 {
     DIGITALTWIN_CLIENT_RESULT result;
     bool urlEncodeOn = true;
-    deviceHandle = NULL;
+    iothub_device_client_handle = NULL;
 
     if (IoTHub_Init() != 0)
     {
@@ -57,7 +57,7 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE az_dt_client_init_device_handle(const char* 
     else
     {
         // First, we create a standard IOTHUB_DEVICE_HANDLE handle for DigitalTwin to consume.
-        if ((deviceHandle = IoTHubDeviceClient_LL_CreateFromConnectionString(device_connection_string, MQTT_Protocol)) == NULL)
+        if ((iothub_device_client_handle = IoTHubDeviceClient_LL_CreateFromConnectionString(device_connection_string, MQTT_Protocol)) == NULL)
         {
             LogError("Failed to create device handle");
             IoTHub_Deinit();
@@ -76,7 +76,7 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE az_dt_client_init_device_handle(const char* 
             az_dt_client_set_option("TrustedCerts", trustedCert);
         }
 
-        if ((result = DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle(deviceHandle, &dt_device_client_handle)) != DIGITALTWIN_CLIENT_OK)
+        if ((result = DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle(iothub_device_client_handle, &dt_device_client_handle)) != DIGITALTWIN_CLIENT_OK)
         {
             LogError("DigitalTwin_DeviceClient_LL_CreateFromDeviceHandle failed, error=<%s>", MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, result));
         }
@@ -84,7 +84,7 @@ DIGITALTWIN_DEVICE_CLIENT_LL_HANDLE az_dt_client_init_device_handle(const char* 
         {
             // Never log the complete connection string , as this contains information
             // that could compromise security of the device.
-            LogInfo("Successfully created DigitalTwin device with device_connection_string=<****>, deviceHandle=<%p>", deviceHandle);
+            LogInfo("Successfully created DigitalTwin device with device_connection_string=<****>, iothub_device_client_handle=<%p>", iothub_device_client_handle);
         }
     }
 
@@ -158,14 +158,14 @@ void az_dt_client_deinit()
         DigitalTwin_DeviceClient_LL_Destroy(dt_device_client_handle);
     }
 
-    if ((dt_device_client_handle == NULL) && (deviceHandle != NULL))
+    if ((dt_device_client_handle == NULL) && (iothub_device_client_handle != NULL))
     {
-        // Only destroy the deviceHandle directly if we've never created a dt_device_client_handle
-        // (dt_device_client_handle de facto takes ownership of deviceHandle once its created).
-        IoTHubDeviceClient_LL_Destroy(deviceHandle);
+        // Only destroy the iothub_device_client_handle directly if we've never created a dt_device_client_handle
+        // (dt_device_client_handle de facto takes ownership of iothub_device_client_handle once its created).
+        IoTHubDeviceClient_LL_Destroy(iothub_device_client_handle);
     }
 
-    if (deviceHandle != NULL)
+    if (iothub_device_client_handle != NULL)
     {
         IoTHub_Deinit();
     }

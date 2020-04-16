@@ -194,7 +194,7 @@ static void pocsensor_property_update_callback(const DIGITALTWIN_CLIENT_PROPERTY
     LogError("POCSENSOR_INTERFACE: Property name <%s> is not associated with this interface", dtClientPropertyUpdate->propertyName);
 }
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportBatteryRemaining()
+DIGITALTWIN_CLIENT_RESULT pocsensor_repoty_battery_remaining()
 {
     if (interface_client_handle == NULL)
     {

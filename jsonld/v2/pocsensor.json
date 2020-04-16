@@ -1,0 +1,91 @@
+{
+  "@context": "dtmi:dtdl:context;2",
+  "@id": "dtmi:test:pocsensor;1",
+  "@type": "Interface",
+  "contents": [
+    {
+      "@id": "dtmi:test:locationTelemetry;1",
+      "@type": "Telemetry",
+      "name": "location",
+      "schema": {
+        "@type": "Object",
+        "fields": [
+          {
+            "name": "latitude",
+            "schema": "double",
+            "description": "distance from equator",
+            "comment": "positive is north"
+          },
+          {
+            "name": "longitude",
+            "schema": "double",
+            "description": "distance from meridian",
+            "comment": "positive is east"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "dtmi:test:batteryRemainingProperty;1",
+      "@type": "Property",
+      "comment": "Remaining battery runtime in seconds. Ex. 383.",
+      "displayName": "Battery remaining",
+      "name": "battery_remaining",
+      "schema": "double"
+    },
+    {
+      "@id": "dtmi:test:settings;1",
+      "@type": "Property",
+      "name": "settings",
+      "schema": {
+        "@type": "Object",
+        "fields": [
+          {
+            "name": "fan_speed",
+            "schema": "double",
+            "description": "target fan speed to set"
+          },
+          {
+            "name": "voltage",
+            "schema": "double",
+            "description": "target voltage to set"
+          }
+        ]
+      },
+      "writable": true,
+      "description": "basic settings for the device"
+    },
+    {
+      "@id": "dtmi:test:updateFirmwareCommand;1",
+      "@type": "Command",
+      "name": "update_firmware",
+      "request": {
+        "name": "request",
+        "schema": {
+          "@type": "Object",
+          "fields": [
+            {
+              "name": "firmware_uri",
+              "schema": "string",
+              "description": "the download uri for the new firmware"
+            },
+            {
+              "name": "firmware_version",
+              "schema": "integer",
+              "description": "the new firmware version"
+            }
+          ]
+        }
+      },
+      "response": {
+        "name": "result",
+        "schema": "boolean"
+      }
+    },
+    {
+      "@type": "Component",
+      "name": "deviceInfo",
+      "schema": "dtmi:azure:deviceManagement:DeviceInformation;1"
+    }
+  ]
+}

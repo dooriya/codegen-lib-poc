@@ -19,10 +19,12 @@ add_compile_options(/W3)
 #include(global_compile_options.txt)
 set(sample_h_files
     ./dps_prov.h
+    ./digitaltwin_client_helper.h
 )
 
 set(sample_c_files
     ./dps_prov.c
+    ./digitaltwin_client_helper.c
     ./main.c
 )
 

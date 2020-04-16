@@ -3,7 +3,7 @@
 #include "azure_c_shared_utility/xlogging.h"
 #include "azure_c_shared_utility/tickcounter.h"
 #include "digitaltwin_device_client_ll.h"
-#include "interface/digitaltwin_client_helper.h"
+#include "digitaltwin_client_helper.h"
 #include "interface/pocsensor_interface.h"
 
 #include "dps_prov.h"
@@ -75,7 +75,7 @@ void pnp_device_run()
     if (nowTick - lastTickSend >= DEFAULT_SEND_TELEMETRY_INTERVAL_MS)
     {
         // report properties
-        PocSensorInterface_Property_ReportBatteryRemaining();
+        pocsensor_repoty_battery_remaining();
 
         // Send telemetry
         pocsensor_send_location_telemetry();

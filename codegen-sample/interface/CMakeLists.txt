@@ -8,8 +8,6 @@ set(CMAKE_C_STANDARD 99)
 
 add_library (
   ${TARGET_NAME}
-  digitaltwin_client_helper.h
-  digitaltwin_client_helper.c
   pocsensor_interface.h
   pocsensor_interface.c
   )

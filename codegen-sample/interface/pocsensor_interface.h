@@ -25,7 +25,7 @@ DIGITALTWIN_INTERFACE_CLIENT_HANDLE pocsensor_create();
 
 DIGITALTWIN_CLIENT_RESULT pocsensor_send_location_telemetry();
 
-DIGITALTWIN_CLIENT_RESULT PocSensorInterface_Property_ReportBatteryRemaining();
+DIGITALTWIN_CLIENT_RESULT pocsensor_repoty_battery_remaining();
 
 void pocsensor_close(DIGITALTWIN_INTERFACE_CLIENT_HANDLE digitalTwinInterfaceClientHandle);
 
